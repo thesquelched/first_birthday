@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}Admin{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Administer Invitations</h1>
+</div>
+
+<ul class="list-group">
+{% for invite in invites %}
+    <li class="list-group-item">
+    {{ invite.name }}
+    [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a> ]</small>
+
+    {% if invite.attend_cu %}
+    <span class="label label-success">Attending Champaign</span>
+    {% else %}
+    <span class="label label-danger">Not attending Champaign</span>
+    {% endif %}
+
+    {% if invite.attend_stl %}
+    <span class="label label-success">Attending STL</span>
+    {% else %}
+    <span class="label label-danger">Not attending STL</span>
+    {% endif %}
+    </li>
+{% endfor %}
+</ul>
+
+{% endblock %}

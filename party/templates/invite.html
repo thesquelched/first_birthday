@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block title %}RSVP{% endblock %}
+
+{% block content %}
+
+{% if invitation %}
+
+<div class="jumbotron">
+    <h1>Hello, {{ invitation.name }}!</h1>
+    <p>
+    Eileen will have two parties: one in St. Louis and one in Champaign.  You're welcome to come to either or both.
+    </p>
+
+    <div class="alert alert-info">Please RSVP by April 1!</div>
+</div>
+
+<form role="form" action="{{ url_for('confirm') }}" method="post">
+    <input type="hidden" name="guid" value="{{ invitation.guid }}"/>
+    <div class="form-group">
+        Will you be coming to the <a href="#">party in St. Louis on April X, 2014</a>?
+        <select name="stl" class="form-control">
+            <option value="no">No</option>
+            <option value="yes" {% if invitation.attend_stl %}selected{% endif %}>Yes</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        Will you be coming to the <a href="#">party in Champaign on April X, 2014</a>?
+        <select name="cu" class="form-control">
+            <option value="no">No</option>
+            <option value="yes" {% if invitation.attend_cu %}selected{% endif %}>Yes</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-default">Confirm</button>
+</form>
+
+{% else %}
+<div class="jumbotron">
+<h1>Oops!</h1>
+<p>
+Sorry, we couldn't find your invitation.  If you believe this is in error, please contact Scott or Lindsay.  If you don't know how to contact us, then contact someone who knows us.  If you can't even do that, then who the hell are you?
+</p>
+</div>
+{% endif %}
+
+{% endblock %}

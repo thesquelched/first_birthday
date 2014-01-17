@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block title %}Confirmed{% endblock %}
+
+{% block content %}
+
+{% if success %}
+<div class="alert alert-success">
+    Thanks for confirming!
+</div>
+{% else %}
+<div class="alert alert-danger">
+    Encountered an error during confirmation.  Please try again, or contact Scott or Lindsay to confirm.
+</div>
+{% endif %}
+
+{% endblock %}
