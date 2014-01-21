@@ -25,9 +25,13 @@ class Invitation(db.Model):
     guid = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(128), unique=True)
     email = db.Column(db.String(128))
+    viewed = db.Column(db.Boolean(), default=False)
+    confirmed = db.Column(db.Boolean(), default=False)
 
     attend_stl = db.Column(db.Boolean(), default=False)
     attend_cu = db.Column(db.Boolean(), default=False)
+
+    attendees = db.Column(db.Integer(), default=1)
 
 
 class User(db.Model, UserMixin):
@@ -99,19 +103,40 @@ def logout():
 @login_required
 def admin():
     invites = Invitation.query.all()
-    return render_template('admin.html', user=current_user, invites=invites)
+
+    total_stl, total_cu = 0, 0
+    confirmed, unconfirmed = [], []
+    for invite in invites:
+        if invite.confirmed:
+            confirmed.append(invite)
+            total_stl += invite.attendees if invite.attend_stl else 0
+            total_cu += invite.attendees if invite.attend_cu else 0
+        else:
+            unconfirmed.append(invite)
+
+    return render_template(
+        'admin.html',
+        user=current_user,
+        confirmed=confirmed,
+        unconfirmed=unconfirmed,
+        total_stl=total_stl,
+        total_cu=total_cu,
+        total_attendees=total_stl + total_cu)
 
 
 def valid_confirmation(form):
+    app.logger.debug('Form: {}'.format(form))
     return 'guid' in form and 'stl' in form and 'cu' in form
 
 
 @app.route('/confirm', methods=['GET', 'POST'])
 def confirm():
     if request.method != 'POST':
+        app.logger.debug('Not POST; redirecting to index')
         return redirect(url_for('index'))
 
     if not valid_confirmation(request.form):
+        app.logger.error('Invalid request')
         return render_template(
             'confirm.html', success=False, user=current_user)
 
@@ -122,6 +147,8 @@ def confirm():
 
     inv.attend_stl = request.form['stl'].lower() == 'yes'
     inv.attend_cu = request.form['cu'].lower() == 'yes'
+    inv.attendees = int(request.form['attendees'])
+    inv.confirmed = True
 
     try:
         db.session.add(inv)
@@ -142,6 +169,10 @@ def invite(guid):
     app.logger.debug(Invitation.query.all())
 
     inv = Invitation.query.get(uuid.UUID(guid))
+    if not current_user.is_authenticated() and not inv.viewed:
+        inv.viewed = True
+        db.session.commit()
+
     if inv is None:
         app.logger.error('No invitation found')
     else:

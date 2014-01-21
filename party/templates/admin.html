@@ -7,23 +7,45 @@
     <h1>Administer Invitations</h1>
 </div>
 
+<div class="jumbotron container">
+    <div class="row">
+        <div class="col-sm-6"><h2>Attending Champaign</h2></div>
+        <div class="col-sm-6"><h2>{{total_cu}}</h2></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6"><h2>Attending St. Louis</h2></div>
+        <div class="col-sm-6"><h2>{{total_stl}}</h2></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6"><h2><strong>Total</strong></h2></div>
+        <div class="col-sm-6"><h2><strong>{{total_attendees}}</strong></h2></div>
+    </div>
+</div>
+
+<h2>Confirmed</h2>
 <ul class="list-group">
-{% for invite in invites %}
+{% for invite in confirmed %}
     <li class="list-group-item">
-    {{ invite.name }}
+    <a href="{{ url_for('invite', guid=invite.guid) }}">{{ invite.name }}</a>
     [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a> ]</small>
 
-    {% if invite.attend_cu %}
-    <span class="label label-success">Attending Champaign</span>
-    {% else %}
-    <span class="label label-danger">Not attending Champaign</span>
-    {% endif %}
+    <span class="label label-{{ 'success' if invite.attend_cu else 'danger'}}">Champaign</span>
+    <span class="label label-{{ 'success' if invite.attend_stl else 'danger'}}">STL</span>
+    </li>
+{% endfor %}
 
-    {% if invite.attend_stl %}
-    <span class="label label-success">Attending STL</span>
+<h2>Unconfirmed</h2>
+{% for invite in unconfirmed %}
+    <li class="list-group-item">
+    <a href="{{ url_for('invite', guid=invite.guid) }}">{{ invite.name }}</a>
+    [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a> ]</small>
+
+    {% if invite.viewed %}
+    <span class="label label-success">Viewed</span>
     {% else %}
-    <span class="label label-danger">Not attending STL</span>
+    <span class="label label-danger">Not Viewed</span>
     {% endif %}
+    <span class="label label-warning">Not Confirmed</span>
     </li>
 {% endfor %}
 </ul>

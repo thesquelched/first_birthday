@@ -17,7 +17,7 @@
 <form role="form" action="{{ url_for('confirm') }}" method="post">
     <input type="hidden" name="guid" value="{{ invitation.guid }}"/>
     <div class="form-group">
-        Will you be coming to the <a href="#">party in St. Louis on April X, 2014</a>?
+        <label for="stl">Will you be coming to the party in St. Louis on April X, 2014?</label>
         <select name="stl" class="form-control">
             <option value="no">No</option>
             <option value="yes" {% if invitation.attend_stl %}selected{% endif %}>Yes</option>
@@ -25,10 +25,22 @@
     </div>
 
     <div class="form-group">
-        Will you be coming to the <a href="#">party in Champaign on April X, 2014</a>?
+        <label for="cu">Will you be coming to the party in Champaign on April X, 2014?</label>
         <select name="cu" class="form-control">
             <option value="no">No</option>
             <option value="yes" {% if invitation.attend_cu %}selected{% endif %}>Yes</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="attendees">Number of attendees</label>
+        <select name="attendees" class="form-control">
+            {% for idx in range(1, invitation.attendees) %}
+            <option value="{{idx}}">{{idx}}</option>
+            {% endfor %}
+            {% for idx in range(invitation.attendees, 11) %}
+            <option value="{{idx}}" {% if loop.first %}selected{% endif %}>{{idx}}</option>
+            {% endfor %}
         </select>
     </div>
 
