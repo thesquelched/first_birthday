@@ -1,0 +1,2 @@
+#EMAIL_SENDER = 'me@email.com'
+#EMAIL_CONTENT_DEFAULT = 'An email to {name}'

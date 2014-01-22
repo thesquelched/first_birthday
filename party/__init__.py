@@ -1,4 +1,6 @@
+import party.config as config
 from party.guid import GUID
+from party.emailer import MockEmailer
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import (
@@ -132,17 +134,12 @@ def admin_action():
         return redirect(url_for('admin'))
 
     invites = Invitation.query.filter(Invitation.guid.in_(guids)).all()
-    default_email = """\
-Hello {name}!
-
-You are hereby invite to Eileen Kruger's First Birthday Party."""
-
     if 'email' in request.form:
         return render_template(
             'email.html',
             invites=invites,
             user=current_user,
-            content=default_email)
+            content=config.EMAIL_CONTENT_DEFAULT)
 
     return redirect(url_for('admin'))
 
@@ -164,14 +161,15 @@ def admin_email():
             user=current_user,
             content=content_template)
 
-    for invite in invites:
-        content = content_template.format(
-            name=invite.name,
-        )
+    with MockEmailer(config.EMAIL_SENDER, logger=app.logger) as emailer:
+        for invite in invites:
+            content = content_template.format(
+                name=invite.name,
+            )
 
-        app.logger.debug('Email\nTo: {}\nSubject: {}\n\n{}'.format(
-            invite.email, subject, content))
+            emailer.send(invite.email, subject, content)
 
+    flash('Successfully sent {} emails'.format(len(invites)), 'success')
     return redirect(url_for('admin'))
 
 

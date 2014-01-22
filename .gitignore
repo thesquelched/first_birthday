@@ -2,3 +2,4 @@ env
 .ropeproject
 __pycache__
 *.pyc
+config.py
