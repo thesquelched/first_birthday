@@ -1,6 +1,5 @@
 import party.config as config
 from party.guid import GUID
-from party.emailer import MockEmailer
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import (
@@ -152,6 +151,7 @@ def admin_email():
 
     subject = request.form['subject']
     content_template = request.form['content']
+    emailer_cls = config.EMAIL_CLASS
 
     if not subject:
         flash('Invalid Subject', 'danger')
@@ -161,7 +161,7 @@ def admin_email():
             user=current_user,
             content=content_template)
 
-    with MockEmailer(config.EMAIL_SENDER, logger=app.logger) as emailer:
+    with emailer_cls(config.EMAIL_SENDER, logger=app.logger) as emailer:
         for invite in invites:
             content = content_template.format(
                 name=invite.name,
