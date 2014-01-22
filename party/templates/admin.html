@@ -22,32 +22,39 @@
     </div>
 </div>
 
-<h2>Confirmed</h2>
-<ul class="list-group">
-{% for invite in confirmed %}
-    <li class="list-group-item">
-    <a href="{{ url_for('invite', guid=invite.guid) }}">{{ invite.name }}</a>
-    [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a> ]</small>
+<form role="form" action="{{ url_for('admin_action') }}" method="post">
+    <h2>Confirmed</h2>
+    <ul class="list-group">
+    {% for invite in confirmed %}
+        <li class="list-group-item">
+        <input type="checkbox" name="guid" value="{{invite.guid}}"/>
+            <a href="{{ url_for('invite', guid=invite.guid) }}">{{ invite.name }}</a>
+            [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a> ]</small>
 
-    <span class="label label-{{ 'success' if invite.attend_cu else 'danger'}}">Champaign</span>
-    <span class="label label-{{ 'success' if invite.attend_stl else 'danger'}}">STL</span>
-    </li>
-{% endfor %}
+            <span class="label label-{{ 'success' if invite.attend_cu else 'danger'}}">Champaign</span>
+            <span class="label label-{{ 'success' if invite.attend_stl else 'danger'}}">STL</span>
+        </li>
+    {% endfor %}
 
-<h2>Unconfirmed</h2>
-{% for invite in unconfirmed %}
-    <li class="list-group-item">
-    <a href="{{ url_for('invite', guid=invite.guid) }}">{{ invite.name }}</a>
-    [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a> ]</small>
+    <h2>Unconfirmed</h2>
+    {% for invite in unconfirmed %}
+        <li class="list-group-item">
+            <input type="checkbox" name="guid" value="{{invite.guid}}"/>
+            <a href="{{ url_for('invite', guid=invite.guid) }}">{{ invite.name }}</a>
+            [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a> ]</small>
 
-    {% if invite.viewed %}
-    <span class="label label-success">Viewed</span>
-    {% else %}
-    <span class="label label-danger">Not Viewed</span>
-    {% endif %}
-    <span class="label label-warning">Not Confirmed</span>
-    </li>
-{% endfor %}
-</ul>
+            {% if invite.viewed %}
+            <span class="label label-success">Viewed</span>
+            {% else %}
+            <span class="label label-danger">Not Viewed</span>
+            {% endif %}
+            <span class="label label-warning">Not Confirmed</span>
+        </li>
+    {% endfor %}
+    </ul>
+    <div class="form-group">
+        <button name="email" type="submit" class="btn btn-default">Send Email</button>
+    </div>
+</form>
 
 {% endblock %}

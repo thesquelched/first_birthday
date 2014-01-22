@@ -1,5 +1,5 @@
 from party.guid import GUID
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import (
     LoginManager, login_user, logout_user, UserMixin, current_user,
@@ -122,6 +122,57 @@ def admin():
         total_stl=total_stl,
         total_cu=total_cu,
         total_attendees=total_stl + total_cu)
+
+
+@app.route('/admin/action', methods=['POST'])
+@login_required
+def admin_action():
+    guids = request.form.getlist('guid')
+    if not guids:
+        return redirect(url_for('admin'))
+
+    invites = Invitation.query.filter(Invitation.guid.in_(guids)).all()
+    default_email = """\
+Hello {name}!
+
+You are hereby invite to Eileen Kruger's First Birthday Party."""
+
+    if 'email' in request.form:
+        return render_template(
+            'email.html',
+            invites=invites,
+            user=current_user,
+            content=default_email)
+
+    return redirect(url_for('admin'))
+
+
+@app.route('/admin/email', methods=['POST'])
+@login_required
+def admin_email():
+    guids = request.form.getlist('guid')
+    invites = Invitation.query.filter(Invitation.guid.in_(guids)).all()
+
+    subject = request.form['subject']
+    content_template = request.form['content']
+
+    if not subject:
+        flash('Invalid Subject', 'danger')
+        return render_template(
+            'email.html',
+            invites=invites,
+            user=current_user,
+            content=content_template)
+
+    for invite in invites:
+        content = content_template.format(
+            name=invite.name,
+        )
+
+        app.logger.debug('Email\nTo: {}\nSubject: {}\n\n{}'.format(
+            invite.email, subject, content))
+
+    return redirect(url_for('admin'))
 
 
 def valid_confirmation(form):
