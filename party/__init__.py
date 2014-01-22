@@ -9,9 +9,9 @@ from flask.ext.login import (
 import uuid
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-app.config['SQLALCHEMY_ECHO'] = True
-app.config['SECRET_KEY'] = '1tj2oengiknjr5uj23pogqsvgnjwru1wjp'
+app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
+app.config['SQLALCHEMY_ECHO'] = config.SQLALCHEMY_ECHO
+app.config['SECRET_KEY'] = config.SECRET_KEY
 
 db = SQLAlchemy(app)
 

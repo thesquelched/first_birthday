@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+
 {% block title %}Admin{% endblock %}
 
 {% block content %}
@@ -22,9 +23,23 @@
     </div>
 </div>
 
-<form role="form" action="{{ url_for('admin_action') }}" method="post">
+<a name="controls"></a>
+<div class="btn-group">
+    <button type="button" id="control-all" class="btn btn-default"><span class="glyphicon glyphicon-check"></span></button>
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li><a id="control-all-confirmed" href="#controls">Confirmed</a></li>
+        <li><a id="control-all-unconfirmed" href="#controls">Unconfirmed</a></li>
+        <li><a id="control-none" href="#controls">None</a></li>
+    </ul>
+</div>
+
+<form id="invites" role="form" action="{{ url_for('admin_action') }}" method="post">
     <h2>Confirmed</h2>
-    <ul class="list-group">
+    <ul class="list-group" id="confirmed">
     {% for invite in confirmed %}
         <li class="list-group-item">
         <input type="checkbox" name="guid" value="{{invite.guid}}"/>
@@ -35,8 +50,10 @@
             <span class="label label-{{ 'success' if invite.attend_stl else 'danger'}}">STL</span>
         </li>
     {% endfor %}
+    </ul>
 
     <h2>Unconfirmed</h2>
+    <ul class="list-group" id="unconfirmed">
     {% for invite in unconfirmed %}
         <li class="list-group-item">
             <input type="checkbox" name="guid" value="{{invite.guid}}"/>
@@ -56,5 +73,21 @@
         <button name="email" type="submit" class="btn btn-default">Send Email</button>
     </div>
 </form>
+
+<script>
+/* Select All */
+
+function makeSelector(id, checked) {
+    return function() {
+        $(id).prop('checked', checked);
+    };
+}
+
+$('#control-all').click(makeSelector("#invites input:checkbox", true));
+$('#control-all-confirmed').click(makeSelector('#confirmed input:checkbox', true));
+$('#control-all-unconfirmed').click(makeSelector('#unconfirmed input:checkbox', true));
+$('#control-none').click(makeSelector("#invites input:checkbox", false));
+
+</script>
 
 {% endblock %}

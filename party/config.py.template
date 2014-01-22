@@ -1,2 +1,7 @@
 #EMAIL_SENDER = 'me@email.com'
 #EMAIL_CONTENT_DEFAULT = 'An email to {name}'
+
+# Flask Configuration
+#SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
+#SQLALCHEMY_ECHO = False
+#SECRET_KEY = 'my_secret_here'
