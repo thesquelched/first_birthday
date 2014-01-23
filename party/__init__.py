@@ -6,6 +6,7 @@ from flask.ext.login import (
     LoginManager, login_user, logout_user, UserMixin, current_user,
     login_required)
 import uuid
+import hashlib
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
@@ -69,9 +70,13 @@ class LoginForm(object):
         if not ('user' in form and 'password' in form):
             return None
 
+        pw_hash = hashlib.sha512()
+        pw_hash.update(form['password'].encode())
+        pw_hash.update(config.PASSWORD_SALT)
+
         return User.query.filter_by(
             username=form['user'],
-            password=form['password']).first()
+            password=pw_hash.hexdigest()).first()
 
 
 @app.route('/login', methods=['GET', 'POST'])
