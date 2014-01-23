@@ -129,8 +129,8 @@ def admin():
 @login_required
 def admin_action():
     guids = request.form.getlist('guid')
-
     invites = Invitation.query.filter(Invitation.guid.in_(guids)).all()
+
     if 'email' in request.form:
         if not guids:
             return redirect(url_for('admin'))
@@ -144,7 +144,27 @@ def admin_action():
         return render_template(
             'create.html',
             user=current_user)
+    elif 'delete' in request.form:
+        return delete_invitations(invites)
 
+    return redirect(url_for('admin'))
+
+
+def delete_invitations(invites):
+    try:
+        for invite in invites:
+            db.session.delete(invite)
+        db.session.commit()
+    except Exception as ex:
+        app.logger.error('Unable to delete invitations: {}'.format(ex))
+        db.session.rollback()
+        flash('Unable to delete invitations', 'danger')
+        return redirect(url_for('admin'))
+
+    flash(
+        'Sucessfully deleted {} invitations'.format(len(invites)),
+        'success'
+    )
     return redirect(url_for('admin'))
 
 
