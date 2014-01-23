@@ -129,16 +129,39 @@ def admin():
 @login_required
 def admin_action():
     guids = request.form.getlist('guid')
-    if not guids:
-        return redirect(url_for('admin'))
 
     invites = Invitation.query.filter(Invitation.guid.in_(guids)).all()
     if 'email' in request.form:
+        if not guids:
+            return redirect(url_for('admin'))
+
         return render_template(
             'email.html',
             invites=invites,
             user=current_user,
             content=config.EMAIL_CONTENT_DEFAULT)
+    elif 'create' in request.form:
+        return render_template(
+            'create.html',
+            user=current_user)
+
+    return redirect(url_for('admin'))
+
+
+@app.route('/admin/create', methods=['POST'])
+@login_required
+def create_invitation():
+    if not ('email' in request.form and 'name' in request.form):
+        flash('Invalid invitation', 'danger')
+        return render_template('email.html', user=current_user)
+
+    invite = Invitation(
+        email=request.form['email'],
+        name=request.form['name']
+    )
+
+    db.session.add(invite)
+    db.session.commit()
 
     return redirect(url_for('admin'))
 
@@ -178,21 +201,22 @@ def valid_confirmation(form):
     return 'guid' in form and 'stl' in form and 'cu' in form
 
 
-@app.route('/confirm', methods=['GET', 'POST'])
-def confirm():
-    if request.method != 'POST':
-        app.logger.debug('Not POST; redirecting to index')
-        return redirect(url_for('index'))
+def confirmation_error():
+    flash(
+        'Unable to confirm invitation.  Please contact Scott or Lindsay.',
+        'danger'
+    )
+    return redirect(url_for('index'))
 
+
+@app.route('/confirm', methods=['POST'])
+def confirm():
     if not valid_confirmation(request.form):
-        app.logger.error('Invalid request')
-        return render_template(
-            'confirm.html', success=False, user=current_user)
+        return confirmation_error()
 
     inv = Invitation.query.get(uuid.UUID(request.form['guid']))
     if inv is None:
-        return render_template(
-            'confirm.html', success=False, user=current_user)
+        return confirmation_error()
 
     inv.attend_stl = request.form['stl'].lower() == 'yes'
     inv.attend_cu = request.form['cu'].lower() == 'yes'
@@ -202,12 +226,12 @@ def confirm():
     try:
         db.session.add(inv)
         db.session.commit()
-        success = True
     except:
         db.session.rollback()
-        success = False
+        return confirmation_error()
 
-    return render_template('confirm.html', success=success, user=current_user)
+    flash('Successfully confirmed your invitation.  Thanks!', 'success')
+    return redirect(url_for('index'))
 
 
 @app.route('/invite/<guid>')
