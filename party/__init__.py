@@ -60,7 +60,11 @@ def load_user(userid):
 
 @app.route('/')
 def index():
-    return render_template('index.html', user=current_user)
+    return render_template(
+        'index.html',
+        user=current_user,
+        slideshow=config.SLIDESHOW_IMAGES,
+    )
 
 
 class LoginForm(object):

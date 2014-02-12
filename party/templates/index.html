@@ -9,29 +9,53 @@
     Please join us for Eileen's First Birthday party! We will have two parties: one in Champaign and one in St. Louis. Everybody is welcome to come to both.
 </div>
 
-<div class="container text-center">
-    <h1>General Info</h1>
-    <ul>
-        <li>Presents are not required</li>
-        <li>The Champaign party will be at Scott and Lindsay's house</li>
-        <li>The St. Louis party will be at Scott's parents' house</li>
-    </ul>
-</div>
-
 <div class="row">
     <div class="col-md-6">
-        <h1>Champaign <small class="date">Saturday, April 12</small></h1>
-        <a href="http://yhoo.it/1eoVaj8" class="btn btn-info btn-lg">Get Directions</a>
+        <div>
+            <h1>General Info</h1>
+            <ul>
+                <li>Presents are not required</li>
+                <li>The Champaign party will be at Scott and Lindsay's house</li>
+                <li>The St. Louis party will be at Scott's parents' house</li>
+            </ul>
+        </div>
+
+        <div>
+            <h1>Champaign <small class="date">Saturday, April 12</small></h1>
+            <a href="http://yhoo.it/1eoVaj8" class="btn btn-info btn-lg">Get Directions</a>
+        </div>
+
+        <div>
+            <h1>St. Louis <small class="date">Saturday, April 19</small></h1>
+            <a href="http://yhoo.it/1eoV3V0" class="btn btn-info btn-lg">Get Directions</a>
+        </div>
     </div>
     <div class="col-md-6">
-        <h1>St. Louis <small class="date">Saturday, April 19</small></h1>
-        <a href="http://yhoo.it/1eoV3V0" class="btn btn-info btn-lg">Get Directions</a>
+        <div id="slideshow" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                {% for img in slideshow %}
+                <div class="item {% if loop.first %}active{% endif %}">
+                    <img src="{{ img }}" alt="Eileen"/>
+                </div>
+                {% endfor %}
+            </div>
+
+            <a class="left carousel-control" href="#slideshow" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
+            <a class="right carousel-control" href="#slideshow" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+        </div>
     </div>
 </div>
 
-
-<!--
-<iframe src="https://www.flickr.com/photos/groovy5769/8675992653/player/b65dc5520f" height="375" width="500"  frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
--->
+<script>
+    $(document).ready(function() {
+        $('.carousel').carousel({
+            interval: 2000,
+        });
+    });
+</script>
 
 {% endblock %}

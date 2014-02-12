@@ -16,6 +16,10 @@ body {
     color: #666;
 }
 
+#slideshow {
+    width: 500px;
+}
+
 #footer {
     height: 60px;
     background-color: #f5f5f5;
