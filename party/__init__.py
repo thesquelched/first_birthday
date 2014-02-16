@@ -262,9 +262,10 @@ def admin_email():
 
     with emailer_cls(config.EMAIL_SENDER, logger=app.logger) as emailer:
         for invite in invites:
+            url = config.URL_BASE + url_for('index', guid=invite.guid)
             content = content_template.format(
                 name=invite.name,
-                invitation_url=url_for('index', guid=invite.guid)
+                invitation_url=url
             )
 
             emailer.send(invite.email, subject, content)

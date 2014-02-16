@@ -7,21 +7,29 @@
     <h1>Send Email</h1>
 </div>
 
-<form role="role" action="{{ url_for('admin_email') }}" method="post">
-    {% for invite in invites %}
-    <label class="checkbox-inline">
-        <input type="checkbox" name="guid" value="{{invite.guid}}" checked>{{invite.email}}
-    </label>
-    {% endfor %}
+<h2>Available parameters</h2>
+<ul>
+    <li><strong>{name}</strong> - Name in the invitation, e.g. 'Scott', 'The Krugers'</li>
+    <li><strong>{invitation_url}</strong> - Unique invitation URL</li>
+</ul>
 
-    <input class="form-control" type="text" name="subject" placeholder="Subject">
-    <textarea name="content" class="form-control" rows="10">{{content}}</textarea>
+<div>
+    <form role="role" action="{{ url_for('admin_email') }}" method="post">
+        {% for invite in invites %}
+        <label class="checkbox-inline">
+            <input type="checkbox" name="guid" value="{{invite.guid}}" checked>{{invite.email}}
+        </label>
+        {% endfor %}
 
-    <div class="form-group">
-        <button type="submit" class="btn btn-default">Send</button>
-        <a class="btn btn-default" href="/admin">Cancel</a>
-    </div>
+        <input class="form-control" type="text" name="subject" placeholder="Subject">
+        <textarea name="content" class="form-control" rows="10">{{content}}</textarea>
 
-</form>
+        <div class="form-group">
+            <button type="submit" class="btn btn-default">Send</button>
+            <a class="btn btn-default" href="/admin">Cancel</a>
+        </div>
+
+    </form>
+</div>
 
 <script{% endblock %}
