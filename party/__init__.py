@@ -264,6 +264,7 @@ def admin_email():
         for invite in invites:
             content = content_template.format(
                 name=invite.name,
+                invitation_url=url_for('index', guid=invite.guid)
             )
 
             emailer.send(invite.email, subject, content)
