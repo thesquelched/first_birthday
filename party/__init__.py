@@ -7,6 +7,7 @@ from flask.ext.login import (
     login_required)
 import uuid
 import hashlib
+import csv
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
@@ -25,7 +26,7 @@ login_manager.init_app(app)
 
 class Invitation(db.Model):
     guid = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
-    name = db.Column(db.String(128), unique=True)
+    name = db.Column(db.String(128))
     email = db.Column(db.String(128))
     viewed = db.Column(db.Boolean(), default=False)
     confirmed = db.Column(db.Boolean(), default=False)
@@ -156,6 +157,10 @@ def admin_action():
             user=current_user)
     elif 'delete' in request.form:
         return delete_invitations(invites)
+    elif 'import' in request.form:
+        return render_template(
+            'import.html',
+            user=current_user)
 
     return redirect(url_for('admin'))
 
@@ -192,6 +197,47 @@ def create_invitation():
 
     db.session.add(invite)
     db.session.commit()
+
+    return redirect(url_for('admin'))
+
+
+def valid_invite(info):
+    return (
+        'Name' in info
+    )
+
+
+@app.route('/admin/import', methods=['POST'])
+@login_required
+def admin_import():
+    if 'file' not in request.files:
+        return redirect(url_for('admin'))
+
+    csv_file = request.files['file']
+
+    try:
+        lines = csv_file.read().decode('UTF-8').strip().split('\n')
+        reader = csv.DictReader(lines)
+        data = [row for row in reader if valid_invite(row)]
+
+        for row in data:
+            invite = Invitation(
+                name=row['Name'],
+                email=row['Email Addresses'],
+                attendees=int(row.get('Count', 1))
+            )
+            db.session.add(invite)
+
+        db.session.commit()
+        flash(
+            'Successfully loaded {} invitations'.format(len(data)),
+            'success'
+        )
+    except Exception as ex:
+        db.session.rollback()
+
+        flash('Could not load CSV file', 'danger')
+        app.logger.error('Could not load CSV: {}'.format(ex))
 
     return redirect(url_for('admin'))
 
