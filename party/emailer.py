@@ -47,6 +47,7 @@ class SmtpEmailer(Emailer):
 
     def __enter__(self):
         self.smtp = SMTP(self.host)
+        return self
 
     def __exit__(self, type, value, traceback):
         self.smtp.quit()
