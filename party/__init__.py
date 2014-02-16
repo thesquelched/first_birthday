@@ -64,6 +64,7 @@ def index():
         'index.html',
         user=current_user,
         slideshow=config.SLIDESHOW_IMAGES,
+        guid=request.args.get('guid', None)
     )
 
 

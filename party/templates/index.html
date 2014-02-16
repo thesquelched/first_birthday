@@ -6,8 +6,16 @@
 <h1 class="text-center">Eileen's First Birthday!</h1>
 
 <div class="lead text-center">
+    <p>
     Please join us for Eileen's First Birthday party! We will have two parties: one in Champaign and one in St. Louis. Everybody is welcome to come to both.
+    </p>
+    <p>
+        {% if guid %}
+        <a href="{{ url_for('invite', guid=guid) }}" class="btn btn-info btn-lg">R.S.V.P. Now!</a>
+        {% endif %}
+    </p>
 </div>
+
 
 <div class="row">
     <div class="col-md-6">
