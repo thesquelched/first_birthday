@@ -8,6 +8,7 @@ from flask.ext.login import (
 import uuid
 import hashlib
 import csv
+import random
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
@@ -66,10 +67,17 @@ def redirect_to_login():
 
 @app.route('/')
 def index():
+    static_imgs = [
+        url_for('static', filename=img)
+        for img in config.SLIDESHOW_IMAGES_STATIC
+    ]
+    images = static_imgs + config.SLIDESHOW_IMAGES
+    random.shuffle(images)
+
     return render_template(
         'index.html',
         user=current_user,
-        slideshow=config.SLIDESHOW_IMAGES,
+        slideshow=images,
         guid=request.args.get('guid', None)
     )
 
