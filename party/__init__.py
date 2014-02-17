@@ -55,6 +55,11 @@ def load_user(userid):
     return User.query.get(userid)
 
 
+@login_manager.unauthorized_handler
+def redirect_to_login():
+    return redirect(url_for('login'))
+
+
 ######################################################################
 # App
 ######################################################################
