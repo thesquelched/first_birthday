@@ -83,6 +83,9 @@
     </div>
 </form>
 
+{% endblock %}
+
+{% block scripts %}
 <script>
 /* Select All */
 
@@ -98,5 +101,4 @@ $('#control-all-unconfirmed').click(makeSelector('#unconfirmed input:checkbox', 
 $('#control-none').click(makeSelector("#invites input:checkbox", false));
 
 </script>
-
 {% endblock %}
