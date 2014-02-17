@@ -9,6 +9,7 @@ import uuid
 import hashlib
 import csv
 import random
+from itertools import chain
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
@@ -280,15 +281,18 @@ def admin_email():
 
     with emailer_cls(config.EMAIL_SENDER, logger=app.logger) as emailer:
         for invite in invites:
-            url = config.URL_BASE + url_for('index', guid=invite.guid)
-            content = content_template.format(
-                name=invite.name,
-                invitation_url=url
-            )
+            for email in invite.email.split(','):
+                url = config.URL_BASE + url_for('index', guid=invite.guid)
+                content = content_template.format(
+                    name=invite.name,
+                    invitation_url=url
+                )
 
-            emailer.send(invite.email, subject, content)
+                emailer.send(email, subject, content)
 
-    flash('Successfully sent {} emails'.format(len(invites)), 'success')
+    emails = list(chain.from_iterable(
+        invite.email.split(',') for invite in invites))
+    flash('Successfully sent {} emails'.format(len(emails)), 'success')
     return redirect(url_for('admin'))
 
 
