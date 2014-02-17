@@ -46,7 +46,7 @@
                 <div class="col-sm-8">
                     <input type="checkbox" name="guid" value="{{invite.guid}}"/>
                     <a href="{{ url_for('invite', guid=invite.guid) }}">{{ invite.name }}</a>
-                    [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a> ]</small>
+                    [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a></small> ]
                 </div>
                 <div class="col-sm-4 text-right">
                     <span class="label label-info">{{ invite.attendees }}</span>
