@@ -42,12 +42,18 @@
     <ul class="list-group" id="confirmed">
     {% for invite in confirmed %}
         <li class="list-group-item">
-        <input type="checkbox" name="guid" value="{{invite.guid}}"/>
-            <a href="{{ url_for('invite', guid=invite.guid) }}">{{ invite.name }}</a>
-            [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a> ]</small>
-
-            <span class="label label-{{ 'success' if invite.attend_cu else 'danger'}}">Champaign</span>
-            <span class="label label-{{ 'success' if invite.attend_stl else 'danger'}}">STL</span>
+            <div class="row">
+                <div class="col-sm-8">
+                    <input type="checkbox" name="guid" value="{{invite.guid}}"/>
+                    <a href="{{ url_for('invite', guid=invite.guid) }}">{{ invite.name }}</a>
+                    [ <small><a href="mailto:{{ invite.email }}">{{ invite.email }}</a> ]</small>
+                </div>
+                <div class="col-sm-4 text-right">
+                    <span class="label label-info">{{ invite.attendees }}</span>
+                    <span class="label label-{{ 'success' if invite.attend_cu else 'danger'}}">Champaign</span>
+                    <span class="label label-{{ 'success' if invite.attend_stl else 'danger'}}">STL</span>
+                </div>
+            </div>
         </li>
     {% endfor %}
     </ul>

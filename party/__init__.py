@@ -211,6 +211,11 @@ def create_invitation():
     db.session.add(invite)
     db.session.commit()
 
+    flash(
+        'Successfully added invitation for {}'.format(request.form['name']),
+        'success'
+    )
+
     return redirect(url_for('admin'))
 
 
