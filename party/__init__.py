@@ -6,10 +6,10 @@ from flask.ext.login import (
     LoginManager, login_user, logout_user, UserMixin, current_user,
     login_required)
 import uuid
-import hashlib
 import csv
 import random
 from itertools import chain
+from passlib.hash import bcrypt
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
@@ -41,11 +41,8 @@ class Invitation(db.Model):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
-
-    username = db.Column(db.String(32), unique=True)
-
-    # Obviously stupid to store in plaintext
-    password = db.Column(db.String(128))
+    username = db.Column(db.String(60), unique=True, nullable=False)
+    password = db.Column(db.String(60))
 
 
 ######################################################################
@@ -87,16 +84,17 @@ class LoginForm(object):
 
     def validate(self):
         form = request.form
-        if not ('user' in form and 'password' in form):
+        username = form.get('user')
+        password = form.get('password')
+
+        if username is None or password is None:
             return None
 
-        pw_hash = hashlib.sha512()
-        pw_hash.update(form['password'].encode())
-        pw_hash.update(config.PASSWORD_SALT)
+        user = User.query.filter_by(username=username).first()
+        if user is not None and bcrypt.verify(password, user.password):
+            return user
 
-        return User.query.filter_by(
-            username=form['user'],
-            password=pw_hash.hexdigest()).first()
+        return None
 
 
 @app.route('/login', methods=['GET', 'POST'])
